@@ -48,6 +48,9 @@ public class RpcClientProxy implements InvocationHandler {
      * 获取代理对象
      */
     public <T> T getProxy(Class<T> clazz) {
+        /**
+         * params: ClassLoader, interfaces[], InvocationHandler
+         */
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }
 

@@ -6,13 +6,13 @@ import java.util.Date;
  * @author zhuqiu
  * @date 2020/8/6
  */
-public interface Time {
+public interface TimeService {
 
     /**
      * 获取当前时间
      *
      * @return  String
      */
-    String getTimt();
+    String getTime();
 
 }

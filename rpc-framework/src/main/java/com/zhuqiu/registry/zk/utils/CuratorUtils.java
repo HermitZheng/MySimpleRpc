@@ -90,8 +90,8 @@ public class CuratorUtils {
         String servicePath = ZK_REGISTER_ROOT_PATH + "/" + rpcServiceName;
         try {
             result = zkClient.getChildren().forPath(servicePath);
-            SERVICE_ADDRESS_MAP.put(servicePath, result);
-            registerWatcher(zkClient, servicePath);
+            SERVICE_ADDRESS_MAP.put(rpcServiceName, result);
+            registerWatcher(rpcServiceName, zkClient);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
         }
@@ -145,7 +145,7 @@ public class CuratorUtils {
      * @param zkClient          Curator 客户端对象
      * @param rpcServiceName    RPC服务名称
      */
-    private static void registerWatcher(CuratorFramework zkClient, String rpcServiceName) {
+    private static void registerWatcher(String rpcServiceName, CuratorFramework zkClient) {
         String servicePath = ZK_REGISTER_ROOT_PATH + "/" + rpcServiceName;
         // 对指定路径下的节点进行监听
         PathChildrenCache pathChildrenCache = new PathChildrenCache(zkClient, servicePath, true);
