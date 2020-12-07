@@ -42,6 +42,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             registerBean(bean);
         }

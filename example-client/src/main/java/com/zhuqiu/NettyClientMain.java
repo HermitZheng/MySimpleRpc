@@ -19,20 +19,16 @@ import org.springframework.stereotype.Component;
 @ComponentScan("com.zhuqiu")
 public class NettyClientMain {
 
-    @RpcProxy
-    private TimeService timeService;
+//    @RpcProxy
+//    private TimeService timeService;
 
     public static void main(String[] args) {
-//        ClientTransport rpcClient = new NettyClientTransport();
-//        RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder().build();
-//        RpcClientProxy proxy = new RpcClientProxy(rpcClient, rpcServiceProperties);
+        ClientTransport rpcClient = new NettyClientTransport();
+        RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder().build();
+        RpcClientProxy proxy = new RpcClientProxy(rpcClient, rpcServiceProperties);
 
-//        TimeService timeService = proxy.getProxy(TimeService.class);
-//        String time = timeService.getTime();
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(NettyClientMain.class);
-
-        String time = new NettyClientMain().timeService.getTime();
-
+        TimeService timeService = proxy.getProxy(TimeService.class);
+        String time = timeService.getTime();
         System.out.println(time);
     }
 }
