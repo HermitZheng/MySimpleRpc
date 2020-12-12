@@ -2,14 +2,14 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
-      <option name="id" value="miremote" />
-      <option name="name" value="maven-remote-virtual" />
-      <option name="url" value="https://pkgs.d.xiaomi.net/artifactory/maven-remote-virtual" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="nexus-server@public-snapshots" />
       <option name="name" value="nexus-server@public-snapshots" />
       <option name="url" value="http://mvn.cloud.alipay.com/nexus/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="miremote" />
+      <option name="name" value="maven-remote-virtual" />
+      <option name="url" value="https://pkgs.d.xiaomi.net/artifactory/maven-remote-virtual" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="snapshots" />
@@ -22,24 +22,24 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="maven-release-virtual" />
-      <option name="url" value="https://pkgs.d.xiaomi.net:443/artifactory/maven-release-virtual" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="jboss.community" />
-      <option name="name" value="JBoss Community repository" />
-      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="nexus-server@public" />
       <option name="name" value="nexus-server@public" />
       <option name="url" value="http://mvn.cloud.alipay.com/nexus/content/groups/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
+      <option name="name" value="maven-release-virtual" />
+      <option name="url" value="https://pkgs.d.xiaomi.net:443/artifactory/maven-release-virtual" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="http://mvn.cloud.alipay.com/nexus/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
   </component>
 </project>

@@ -42,12 +42,18 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             registerBean(bean);
         }
+        return bean;
+    }
+
+    @SneakyThrows
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Field[] fields = bean.getClass().getDeclaredFields();
         for (Field field : fields) {
+            // 对于每个 @RpcProxy 注解的对象，为其依赖注入代理
             if (field.isAnnotationPresent(RpcProxy.class)) {
                 field.setAccessible(true);
                 field.set(bean, proxyBean(field.getType()));
@@ -57,7 +63,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     }
 
     private Object proxyBean(Class<?> bean) {
-        log.info("[{}] is proxied with [{}]", bean.getName(), RpcProxy.class.getCanonicalName());
+        log.info("[{}] is annotated with [{}]", bean.getName(), RpcProxy.class.getCanonicalName());
         return proxy.getProxy(bean);
     }
 

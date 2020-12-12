@@ -10,7 +10,7 @@ import java.util.List;
  * @author zhengqi
  * @date 2020/8/4
  */
-public class ConsistentHashingLoadBalance extends AbstractRequestLoadBalance {
+public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     @Override
     protected String doSelect(List<String> serviceAddresses, RpcRequest request) {

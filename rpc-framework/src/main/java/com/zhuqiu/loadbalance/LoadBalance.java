@@ -13,14 +13,6 @@ import java.util.List;
 public interface LoadBalance {
 
     /**
-     * 从已有的服务地址列表中，选择其中一个地址并返回
-     *
-     * @param serviceAddresses  服务地址列表
-     * @return      一个服务地址
-     */
-    String selectServiceAddress(List<String> serviceAddresses);
-
-    /**
      * 根据不同的请求信息，从已有的服务列表中，选择其中一个地址返回
      *
      * @param serviceAddresses  服务地址列表
