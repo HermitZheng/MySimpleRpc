@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 
 /**
- * 在 Bean 创建之前调用这个类的方法，来检查目标类是否被注解
+ * 在 Bean 创建完成之前（属性赋值之后）调用这个类的方法，来检查目标类是否被注解
  *
  * @author zhuqiu
  * @date 2020/8/4
@@ -55,20 +55,24 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         for (Field field : fields) {
             // 对于每个 @RpcProxy 注解的对象，为其依赖注入代理
             if (field.isAnnotationPresent(RpcProxy.class)) {
+                log.info("Field [{}] of Class [{}] is annotated with [{}]", field.getName(), bean.getClass().getName(), RpcProxy.class.getCanonicalName());
                 field.setAccessible(true);
-                field.set(bean, proxyBean(field.getType()));
+                try {
+                    field.set(bean, proxyBean(field.getType()));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return bean;
     }
 
     private Object proxyBean(Class<?> bean) {
-        log.info("[{}] is annotated with [{}]", bean.getName(), RpcProxy.class.getCanonicalName());
         return proxy.getProxy(bean);
     }
 
     private void registerBean(Object bean) {
-        log.info("[{}] is annotated with [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
+        log.info("Class [{}] is annotated with [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
         // 获取 @RpcService 注解对象
         RpcService annotation = bean.getClass().getAnnotation(RpcService.class);
         // 根据注解信息，构建 RpcServiceProperties

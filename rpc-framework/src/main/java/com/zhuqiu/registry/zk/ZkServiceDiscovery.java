@@ -1,5 +1,6 @@
 package com.zhuqiu.registry.zk;
 
+import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.enumeration.RpcErrorMessage;
 import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.loadbalance.LoadBalance;
@@ -28,15 +29,15 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     }
 
     @Override
-    public InetSocketAddress lookupService(String rpcServiceName) {
+    public InetSocketAddress lookupService(RpcServiceProperties rpcService) {
         CuratorFramework zkClient = CuratorUtils.getZkClient();
         // 从 Zookeeper 中找到提供该服务的地址列表
-        List<String> childrenNodes = CuratorUtils.getChildrenNodes(zkClient, rpcServiceName);
+        List<String> childrenNodes = CuratorUtils.getChildrenNodes(zkClient, rpcService.toRpcServiceName());
         if (childrenNodes.size() == 0) {
-            throw new RpcException(RpcErrorMessage.SERVICE_CAN_NOT_BE_FOUND, rpcServiceName);
+            throw new RpcException(RpcErrorMessage.SERVICE_CAN_NOT_BE_FOUND, rpcService.toRpcServiceName());
         }
         // 按照负载均衡规则从中选出一个服务地址
-        String serviceAddress = loadBalance.selectServiceAddress(childrenNodes);
+        String serviceAddress = loadBalance.selectServiceAddress(childrenNodes, rpcService);
         log.info("成功找到指定服务, 地址: [{}]", serviceAddress);
         // 分离地址和端口号
         String[] split = serviceAddress.split(":");

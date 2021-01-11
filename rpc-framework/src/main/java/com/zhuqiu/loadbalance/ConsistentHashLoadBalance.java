@@ -1,5 +1,6 @@
 package com.zhuqiu.loadbalance;
 
+import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.remoting.dto.RpcRequest;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     @Override
-    protected String doSelect(List<String> serviceAddresses, RpcRequest request) {
+    protected String doSelect(List<String> serviceAddresses, RpcServiceProperties request) {
         return null;
     }
 }

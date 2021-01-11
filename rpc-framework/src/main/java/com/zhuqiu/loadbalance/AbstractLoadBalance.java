@@ -1,5 +1,6 @@
 package com.zhuqiu.loadbalance;
 
+import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.remoting.dto.RpcRequest;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public abstract class AbstractLoadBalance implements LoadBalance {
 
     @Override
-    public String selectServiceAddress(List<String> serviceAddresses, RpcRequest request) {
+    public String selectServiceAddress(List<String> serviceAddresses, RpcServiceProperties request) {
         if (serviceAddresses == null || serviceAddresses.size() == 0) {
             return null;
         }
@@ -30,5 +31,5 @@ public abstract class AbstractLoadBalance implements LoadBalance {
      * @param request           请求体
      * @return      一个服务地址
      */
-    protected abstract String doSelect(List<String> serviceAddresses, RpcRequest request);
+    protected abstract String doSelect(List<String> serviceAddresses, RpcServiceProperties request);
 }

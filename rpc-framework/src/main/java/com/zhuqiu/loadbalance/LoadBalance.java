@@ -1,5 +1,6 @@
 package com.zhuqiu.loadbalance;
 
+import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.remoting.dto.RpcRequest;
 
 import java.util.List;
@@ -19,6 +20,6 @@ public interface LoadBalance {
      * @param request           请求体
      * @return      一个服务地址
      */
-    String selectServiceAddress(List<String> serviceAddresses, RpcRequest request);
+    String selectServiceAddress(List<String> serviceAddresses, RpcServiceProperties request);
 
 }
