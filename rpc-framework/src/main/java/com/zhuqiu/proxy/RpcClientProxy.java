@@ -79,7 +79,8 @@ public class RpcClientProxy implements InvocationHandler {
                 .build();
         RpcResponse<Object> rpcResponse = null;
         // 使用 CompletableFuture 来接收调用结果，当处理完毕时，可以通过 get() 获取到结果
-        CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) clientTransport.sendRpcRequest(rpcRequest);
+        CompletableFuture<RpcResponse<Object>> completableFuture =
+                (CompletableFuture<RpcResponse<Object>>) clientTransport.sendRpcRequest(rpcRequest);
         rpcResponse = completableFuture.get();
         // 检查 RpcResponse 的有效性
         RpcMessageChecker.check(rpcResponse, rpcRequest);

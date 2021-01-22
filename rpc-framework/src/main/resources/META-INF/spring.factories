@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.zhuqiu.remoting.transport.netty.server.NettyServer,\
+  com.zhuqiu.spring.SpringBeanPostProcessor
