@@ -23,6 +23,7 @@ public class CustomShutdownHook {
         log.info("ShutdownHook for clearAll");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             CuratorUtils.clearRegister(CuratorUtils.getZkClient());
+            System.out.println("关闭程序");
 //            ThreadPoolFactoryUtils.shutdownAllThreadPool();
         }));
     }
