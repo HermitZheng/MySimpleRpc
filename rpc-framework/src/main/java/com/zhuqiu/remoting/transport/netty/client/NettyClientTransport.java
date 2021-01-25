@@ -1,5 +1,7 @@
 package com.zhuqiu.remoting.transport.netty.client;
 
+import com.zhuqiu.enumeration.RpcErrorMessage;
+import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.factory.SingletonFactory;
 import com.zhuqiu.registry.ServiceDiscovery;
 import com.zhuqiu.registry.zk.ZkServiceDiscovery;
@@ -7,9 +9,12 @@ import com.zhuqiu.remoting.dto.RpcRequest;
 import com.zhuqiu.remoting.dto.RpcResponse;
 import com.zhuqiu.remoting.transport.netty.ClientTransport;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
@@ -58,5 +63,32 @@ public class NettyClientTransport implements ClientTransport {
             throw new IllegalStateException();
         }
         return completableFuture;
+    }
+
+    @Override
+    public Object serviceDegradation(RpcRequest rpcRequest, Class<?> degradation) {
+        Object instance;
+        try {
+            instance = degradation.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("降级服务: [{}], 实例初始化失败: [{}]", degradation, e.getMessage());
+            return RpcResponse.degrade(null, rpcRequest.getRequestId());
+        }
+        Method method;
+        try {
+            method = degradation.getDeclaredMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+        } catch (NoSuchMethodException e) {
+            log.error("降级服务: [{}], 获取方法: [{}], 失败: [{}]", degradation, rpcRequest.getMethodName(), e.getMessage());
+            return RpcResponse.degrade(null, rpcRequest.getRequestId());
+        }
+        Object data;
+        try {
+            data = method.invoke(instance, rpcRequest.getParameters());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error("调用方法: [{}] 失败", method.getName());
+            log.error("降级服务: [{}], 调用方法: [{}], 失败: [{}]", degradation, rpcRequest.getMethodName(), e.getMessage());
+            return RpcResponse.degrade(null, rpcRequest.getRequestId());
+        }
+        return RpcResponse.degrade(data, rpcRequest.getRequestId());
     }
 }

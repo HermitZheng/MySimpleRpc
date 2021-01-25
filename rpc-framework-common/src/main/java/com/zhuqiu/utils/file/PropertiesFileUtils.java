@@ -15,12 +15,22 @@ import java.util.Properties;
 @Slf4j
 public class PropertiesFileUtils {
 
+    private static volatile Properties properties;
+
     private PropertiesFileUtils(){}
 
-    public static Properties readPropertiesFile(String filename) {
+    public static Properties readProperties(String filename) {
+        if (properties != null) {
+            return properties;
+        } else {
+            return readPropertiesFile(filename);
+        }
+    }
+
+    private static Properties readPropertiesFile(String filename) {
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         String rpcConfigPath = rootPath + filename;
-        Properties properties = null;
+//        Properties properties = null;
         try (FileInputStream fileInputStream = new FileInputStream(rpcConfigPath)) {
             properties = new Properties();
             properties.load(fileInputStream);

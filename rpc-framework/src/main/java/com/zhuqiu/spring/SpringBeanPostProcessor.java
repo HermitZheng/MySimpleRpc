@@ -29,14 +29,8 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
 
     private final ServiceProvider serviceProvider;
 
-    private final RpcClientProxy proxy;
-
     public SpringBeanPostProcessor() {
         serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
-
-        ClientTransport rpcClient = new NettyClientTransport();
-        RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder().build();
-        proxy = new RpcClientProxy(rpcClient, rpcServiceProperties);
     }
 
     @SneakyThrows
@@ -54,11 +48,15 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         Field[] fields = bean.getClass().getDeclaredFields();
         for (Field field : fields) {
             // 对于每个 @RpcProxy 注解的对象，为其依赖注入代理
-            if (field.isAnnotationPresent(RpcProxy.class)) {
+            RpcProxy annotation = field.getAnnotation(RpcProxy.class);
+            if (annotation != null) {
                 log.info("Field [{}] of Class [{}] is annotated with [{}]", field.getName(), bean.getClass().getName(), RpcProxy.class.getCanonicalName());
+                RpcServiceProperties properties = RpcServiceProperties.builder()
+                        .degradation(annotation.degradation())
+                        .build();
                 field.setAccessible(true);
                 try {
-                    field.set(bean, proxyBean(field.getType()));
+                    field.set(bean, proxyBean(field.getType(), properties));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -67,7 +65,9 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
-    private Object proxyBean(Class<?> bean) {
+    private Object proxyBean(Class<?> bean, RpcServiceProperties properties) {
+        ClientTransport clientTransport = new NettyClientTransport();
+        RpcClientProxy proxy = new RpcClientProxy(clientTransport, properties);
         return proxy.getProxy(bean);
     }
 

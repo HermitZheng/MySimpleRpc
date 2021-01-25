@@ -1,6 +1,9 @@
 package com.zhuqiu.remoting.transport.netty;
 
 import com.zhuqiu.remoting.dto.RpcRequest;
+import com.zhuqiu.remoting.dto.RpcResponse;
+
+import java.lang.reflect.Method;
 
 /**
  * 传输RpcRequest
@@ -17,4 +20,14 @@ public interface ClientTransport {
      * @return      服务端返回的数据对象
      */
     Object sendRpcRequest(RpcRequest rpcRequest);
+
+    /**
+     * 服务降级：如果本地有实现的方法，则执行本地方法
+     *
+     * @param rpcRequest    RPC请求
+     * @return      本地方法返回的数据对象
+     */
+    default Object serviceDegradation(RpcRequest rpcRequest, Class<?> degradation) {
+        return RpcResponse.degrade(null, rpcRequest.getRequestId());
+    }
 }

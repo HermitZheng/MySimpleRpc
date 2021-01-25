@@ -6,8 +6,12 @@ package com.zhuqiu.enumeration;
  */
 public enum RpcConfigProperties {
 
+    // 默认的配置文件名
     RPC_CONFIG_PATH("rpc.properties"),
-    ZK_ADDRESS("rpc.zookeeper.address");
+    // 配置文件中ZK的地址
+    ZK_ADDRESS("rpc.zookeeper.address"),
+    // 配置文件中故障转移策略
+    FAILOVER_STRATEGY("rpc.failover.strategy");
 
     private final String propertyValue;
 

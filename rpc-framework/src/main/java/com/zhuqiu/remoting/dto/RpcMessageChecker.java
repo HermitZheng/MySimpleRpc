@@ -17,7 +17,7 @@ public class RpcMessageChecker {
 
     private RpcMessageChecker() {}
 
-    public static void check(RpcResponse<Object> rpcResponse, RpcRequest rpcRequest) {
+    public static boolean check(RpcResponse<Object> rpcResponse, RpcRequest rpcRequest) throws RpcException {
         if (rpcResponse  == null) {
             throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
@@ -27,5 +27,6 @@ public class RpcMessageChecker {
         if (rpcResponse.getCode() == null || !rpcResponse.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
             throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
+        return true;
     }
 }

@@ -69,4 +69,24 @@ public class RpcResponse<T> implements Serializable {
         response.setMessage(rpcResponseCode.getMessage());
         return response;
     }
+
+    /**
+     * 调用降级服务
+     * 如果本地有实现，则返回调用结果；如果本地没有实现，则返回 null
+     *
+     * @param data      调用返回的数据 或者 null
+     * @param requestId 请求Id
+     * @param <T>       响应数据的类型
+     * @return          Response
+     */
+    public static <T> RpcResponse<T> degrade(T data, String requestId) {
+        RpcResponse<T> response = new RpcResponse<>();
+        response.setCode(RpcResponseCode.DEGRADATION.getCode());
+        response.setMessage(RpcResponseCode.DEGRADATION.getMessage());
+        response.setRequestId(requestId);
+        if (data != null) {
+            response.setData(data);
+        }
+        return response;
+    }
 }

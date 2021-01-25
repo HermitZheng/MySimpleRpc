@@ -121,7 +121,7 @@ public class CuratorUtils {
      */
     public static CuratorFramework getZkClient() {
         // 设置 Zookeeper 服务地址
-        Properties properties = PropertiesFileUtils.readPropertiesFile(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
+        Properties properties = PropertiesFileUtils.readProperties(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
         if (properties != null) {
             defaultZookeeperAddress = properties.getProperty(RpcConfigProperties.ZK_ADDRESS.getPropertyValue());
         }

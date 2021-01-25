@@ -17,4 +17,10 @@ import java.lang.annotation.*;
 @Inherited
 @Component
 public @interface RpcProxy {
+
+    /**
+     * 服务降级所使用的本地实现
+     * @return
+     */
+    Class<?> degradation() default Object.class;
 }
