@@ -1,7 +1,9 @@
 package com.zhuqiu.remoting.transport.netty.server;
 
+import com.zhuqiu.enumeration.RpcErrorMessage;
 import com.zhuqiu.enumeration.RpcMessageType;
 import com.zhuqiu.enumeration.RpcResponseCode;
+import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.factory.SingletonFactory;
 import com.zhuqiu.remoting.dto.RpcRequest;
 import com.zhuqiu.remoting.dto.RpcResponse;
@@ -52,6 +54,11 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 ctx.writeAndFlush(fail).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                 log.error("当前无法传输消息，丢弃消息");
             }
+        } catch (RpcException e) {
+            // 调用失败，fallback
+            RpcResponse<Object> fail = RpcResponse.fail(RpcResponseCode.FAIL);
+            ctx.writeAndFlush(fail).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            log.error("服务调用失败，返回错误响应，msg: [{}]", e.getMessage());
         } finally {
             ReferenceCountUtil.release(msg);
         }

@@ -88,9 +88,9 @@ public class RpcClientProxy implements InvocationHandler {
         RpcResponse<Object> rpcResponse = null;
         // 使用 CompletableFuture 来接收调用结果，当处理完毕时，可以通过 get() 获取到结果
         CompletableFuture<RpcResponse<Object>> completableFuture =
-                (CompletableFuture<RpcResponse<Object>>) clientTransport.sendRpcRequest(rpcRequest);
-        rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
+                clientTransport.sendRpcRequest(rpcRequest);
         try {
+            rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
             // 检查 RpcResponse 的有效性
             RpcMessageChecker.check(rpcResponse, rpcRequest);
         } catch (RpcException e) {
@@ -101,7 +101,6 @@ public class RpcClientProxy implements InvocationHandler {
         return rpcResponse.getData();
     }
 
-    @SneakyThrows
     private RpcResponse<Object> failover(RpcRequest rpcRequest) {
         // 获取配置文件中设置的故障转移策略
         Properties properties = PropertiesFileUtils.readProperties(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
@@ -110,38 +109,49 @@ public class RpcClientProxy implements InvocationHandler {
             strategy = properties.getProperty(RpcConfigProperties.FAILOVER_STRATEGY.getPropertyValue());
         }
         RpcResponse<Object> rpcResponse = null;
+        Class<?> degradation = rpcServiceProperties.getDegradation();
+
         switch (RpcFailoverStrategy.getByValue(strategy)) {
             // 直接调用降级服务
             case DEGRADE:
-                rpcResponse = (RpcResponse<Object>) clientTransport
-                        .serviceDegradation(rpcRequest, rpcServiceProperties.getDegradation());
+                rpcResponse = clientTransport.serviceDegradation(rpcRequest, degradation);
                 break;
-            // 使用 mix 策略
+            // 只进行重试 retry
             case SWITCH:
-                System.out.println("switch");
+                rpcResponse = retry(rpcRequest, false);
                 break;
             // 重试，最后调用降级服务
             default:
                 // TODO 配置文件设置重试次数，以及是否降级
-                int retryTimes = 3;
-                for (int i = 0; i < retryTimes; i++) {
-                    CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>)
-                            clientTransport.sendRpcRequest(rpcRequest);
-                    try {
-                        rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
-                        if (RpcMessageChecker.check(rpcResponse, rpcRequest)) {
-                            break;
-                        }
-                    } catch (RpcException e) {
-                        log.error("调用方法: [{}] 失败, 重试次数: [{}]", rpcRequest.getMethodName(), i+1);
-                    }
-                }
-                if (!RpcMessageChecker.check(rpcResponse, rpcRequest)) {
-                    rpcResponse = (RpcResponse<Object>) clientTransport
-                            .serviceDegradation(rpcRequest, rpcServiceProperties.getDegradation());
-                }
+                rpcResponse = retry(rpcRequest, true, degradation);
                 break;
         }
         return rpcResponse;
+    }
+
+    private RpcResponse<Object> retry(RpcRequest rpcRequest, boolean isDegrade, Class<?> degradation) {
+        int retryTimes = 3;
+        RpcResponse<Object> rpcResponse = null;
+        boolean flag = false;
+        for (int i = 0; i < retryTimes; i++) {
+            CompletableFuture<RpcResponse<Object>> completableFuture = clientTransport.sendRpcRequest(rpcRequest);
+            try {
+                rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
+                if (RpcMessageChecker.check(rpcResponse, rpcRequest)) {
+                    flag = true;
+                    break;
+                }
+            } catch (InterruptedException | ExecutionException | TimeoutException | RpcException e) {
+                log.error("调用方法: [{}] 失败, 重试次数: [{}]", rpcRequest.getMethodName(), i+1);
+            }
+        }
+        if (!flag && isDegrade && degradation != null) {
+            rpcResponse = clientTransport.serviceDegradation(rpcRequest, degradation);
+        }
+        return rpcResponse;
+    }
+
+    private RpcResponse<Object> retry(RpcRequest rpcRequest, boolean isDegrade) {
+        return retry(rpcRequest, false, null);
     }
 }

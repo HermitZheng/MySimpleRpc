@@ -32,6 +32,11 @@ public class RpcServiceProperties implements Serializable {
     private String serviceName;
 
     /**
+     * 本地实现的降级服务
+     */
+    private Class<?> degradation;
+
+    /**
      * 获取具体的服务实现类
      *
      * @return  服务实现类名称

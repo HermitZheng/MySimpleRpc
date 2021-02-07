@@ -1,6 +1,7 @@
 package com.zhuqiu.registry;
 
 import com.zhuqiu.entity.RpcServiceProperties;
+import com.zhuqiu.exception.RpcException;
 
 import java.net.InetSocketAddress;
 
@@ -18,5 +19,5 @@ public interface ServiceDiscovery {
      * @param rpcServiceName    服务名称
      * @return      服务地址
      */
-    InetSocketAddress lookupService(RpcServiceProperties rpcServiceName);
+    InetSocketAddress lookupService(RpcServiceProperties rpcServiceName) throws RpcException;
 }

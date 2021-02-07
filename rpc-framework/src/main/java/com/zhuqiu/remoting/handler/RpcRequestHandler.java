@@ -31,7 +31,7 @@ public class RpcRequestHandler {
      * @param rpcRequest    RPC请求
      * @return  处理结果 Object
      */
-    public Object handle(RpcRequest rpcRequest) {
+    public Object handle(RpcRequest rpcRequest) throws RpcException {
         Object service = serviceProvider.getService(rpcRequest.toRpcProperties());
         return invokeTargetMethod(rpcRequest, service);
     }
@@ -43,11 +43,12 @@ public class RpcRequestHandler {
      * @param service       服务对象
      * @return      服务处理的结果
      */
-    private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) {
+    private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) throws RpcException {
         Object result;
+        Method method;
         try {
             // 根据方法名和参数列表获取相应的方法
-            Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+            method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             // 调用方法处理
             result = method.invoke(service, rpcRequest.getParameters());
             log.info("服务 Service: [{}] 成功调用方法 Method: [{}]", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());

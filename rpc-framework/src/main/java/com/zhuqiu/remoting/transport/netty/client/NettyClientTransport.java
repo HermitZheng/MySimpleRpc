@@ -1,6 +1,6 @@
 package com.zhuqiu.remoting.transport.netty.client;
 
-import com.zhuqiu.enumeration.RpcErrorMessage;
+import com.zhuqiu.enumeration.RpcResponseCode;
 import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.factory.SingletonFactory;
 import com.zhuqiu.registry.ServiceDiscovery;
@@ -9,7 +9,6 @@ import com.zhuqiu.remoting.dto.RpcRequest;
 import com.zhuqiu.remoting.dto.RpcResponse;
 import com.zhuqiu.remoting.transport.netty.ClientTransport;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,11 +37,18 @@ public class NettyClientTransport implements ClientTransport {
     }
 
     @Override
-    public Object sendRpcRequest(RpcRequest rpcRequest) {
+    public CompletableFuture<RpcResponse<Object>> sendRpcRequest(RpcRequest rpcRequest) throws RpcException {
         // 构建 CompletableFuture 来接收返回值
         CompletableFuture<RpcResponse<Object>> completableFuture = new CompletableFuture<>();
         // 服务发现，获取服务地址
-        InetSocketAddress serviceAddress = serviceDiscovery.lookupService(rpcRequest.toRpcProperties());
+        InetSocketAddress serviceAddress = null;
+        try {
+            serviceAddress = serviceDiscovery.lookupService(rpcRequest.toRpcProperties());
+        } catch (RpcException e) {
+            log.error("找不到指定的服务，返回错误响应");
+            completableFuture.complete(RpcResponse.fail(RpcResponseCode.FAIL));
+            return completableFuture;
+        }
         // 根据服务地址获取对应的 Channel 通道
         Channel channel = channelProvider.get(serviceAddress);
         // 如果连接正常
@@ -66,7 +72,7 @@ public class NettyClientTransport implements ClientTransport {
     }
 
     @Override
-    public Object serviceDegradation(RpcRequest rpcRequest, Class<?> degradation) {
+    public RpcResponse<Object> serviceDegradation(RpcRequest rpcRequest, Class<?> degradation) {
         Object instance;
         try {
             instance = degradation.newInstance();
@@ -89,6 +95,7 @@ public class NettyClientTransport implements ClientTransport {
             log.error("降级服务: [{}], 调用方法: [{}], 失败: [{}]", degradation, rpcRequest.getMethodName(), e.getMessage());
             return RpcResponse.degrade(null, rpcRequest.getRequestId());
         }
+        log.info("成功执行降级服务: [{}], 调用方法: [{}]", degradation, rpcRequest.getMethodName());
         return RpcResponse.degrade(data, rpcRequest.getRequestId());
     }
 }

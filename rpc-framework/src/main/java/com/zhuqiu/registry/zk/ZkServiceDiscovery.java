@@ -29,7 +29,7 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     }
 
     @Override
-    public InetSocketAddress lookupService(RpcServiceProperties rpcService) {
+    public InetSocketAddress lookupService(RpcServiceProperties rpcService) throws RpcException {
         CuratorFramework zkClient = CuratorUtils.getZkClient();
         // 从 Zookeeper 中找到提供该服务的地址列表
         List<String> childrenNodes = CuratorUtils.getChildrenNodes(zkClient, rpcService.toRpcServiceName());
