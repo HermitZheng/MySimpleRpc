@@ -39,7 +39,9 @@ public class ChannelProvider {
         }
         // 重新建立连接
         Channel channel = nettyClient.doConnect(inetSocketAddress);
-        channelMap.put(key, channel);
+        if (channel.isActive()) {
+            channelMap.put(key, channel);
+        }
         return channel;
     }
 

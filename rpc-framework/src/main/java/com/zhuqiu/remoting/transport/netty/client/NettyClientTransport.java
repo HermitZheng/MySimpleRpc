@@ -1,5 +1,6 @@
 package com.zhuqiu.remoting.transport.netty.client;
 
+import com.zhuqiu.enumeration.RpcErrorMessage;
 import com.zhuqiu.enumeration.RpcResponseCode;
 import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.factory.SingletonFactory;
@@ -66,7 +67,7 @@ public class NettyClientTransport implements ClientTransport {
                 }
             });
         } else {
-            throw new IllegalStateException();
+            throw new RpcException(RpcErrorMessage.CLIENT_CONNECT_SERVER_FAILURE);
         }
         return completableFuture;
     }

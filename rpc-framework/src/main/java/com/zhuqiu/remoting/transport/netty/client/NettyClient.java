@@ -71,10 +71,10 @@ public final class NettyClient {
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 log.info("客户端连接成功：[{}]", inetSocketAddress.toString());
-                completableFuture.complete(future.channel());
             } else {
-                throw new IllegalStateException();
+                log.info("客户端连接失败：[{}]", inetSocketAddress.toString());
             }
+            completableFuture.complete(future.channel());
         });
         // 当获取到处理结果后，get可以得到值
         return completableFuture.get();
