@@ -106,9 +106,10 @@ public class RpcClientProxy implements InvocationHandler {
         Properties properties = PropertiesFileUtils.readProperties(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
         String strategy = RpcFailoverStrategy.RETRY.getStrategyValue();
         if (properties != null) {
-            strategy = properties.getProperty(RpcConfigProperties.FAILOVER_STRATEGY.getPropertyValue());
+            strategy = properties.getProperty(RpcConfigProperties.FAILOVER_STRATEGY.getPropertyValue(), strategy);
         }
-        RpcResponse<Object> rpcResponse = null;
+        RpcResponse<Object> rpcResponse;
+        // 获取降级服务的实现类
         Class<?> degradation = rpcServiceProperties.getDegradation();
 
         switch (RpcFailoverStrategy.getByValue(strategy)) {
@@ -118,7 +119,7 @@ public class RpcClientProxy implements InvocationHandler {
                 break;
             // 只进行重试 retry
             case SWITCH:
-                rpcResponse = retry(rpcRequest, false);
+                rpcResponse = retry(rpcRequest);
                 break;
             // 重试，最后调用降级服务
             default:
@@ -151,7 +152,7 @@ public class RpcClientProxy implements InvocationHandler {
         return rpcResponse;
     }
 
-    private RpcResponse<Object> retry(RpcRequest rpcRequest, boolean isDegrade) {
+    private RpcResponse<Object> retry(RpcRequest rpcRequest) {
         return retry(rpcRequest, false, null);
     }
 }

@@ -3,6 +3,7 @@ package com.zhuqiu.registry.zk;
 import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.enumeration.RpcErrorMessage;
 import com.zhuqiu.exception.RpcException;
+import com.zhuqiu.loadbalance.ConsistentHashLoadBalance;
 import com.zhuqiu.loadbalance.LoadBalance;
 import com.zhuqiu.loadbalance.RandomLoadBalance;
 import com.zhuqiu.registry.ServiceDiscovery;
@@ -25,7 +26,7 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     private final LoadBalance loadBalance;
 
     public ZkServiceDiscovery() {
-        this.loadBalance = new RandomLoadBalance();
+        this.loadBalance = new ConsistentHashLoadBalance();
     }
 
     @Override

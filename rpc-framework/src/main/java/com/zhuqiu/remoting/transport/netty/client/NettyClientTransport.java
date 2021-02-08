@@ -41,7 +41,7 @@ public class NettyClientTransport implements ClientTransport {
         // 构建 CompletableFuture 来接收返回值
         CompletableFuture<RpcResponse<Object>> completableFuture = new CompletableFuture<>();
         // 服务发现，获取服务地址
-        InetSocketAddress serviceAddress = null;
+        InetSocketAddress serviceAddress;
         try {
             serviceAddress = serviceDiscovery.lookupService(rpcRequest.toRpcProperties());
         } catch (RpcException e) {
@@ -73,6 +73,7 @@ public class NettyClientTransport implements ClientTransport {
 
     @Override
     public RpcResponse<Object> serviceDegradation(RpcRequest rpcRequest, Class<?> degradation) {
+        // 获取降级服务的实例
         Object instance;
         try {
             instance = degradation.newInstance();
@@ -80,6 +81,7 @@ public class NettyClientTransport implements ClientTransport {
             log.error("降级服务: [{}], 实例初始化失败: [{}]", degradation, e.getMessage());
             return RpcResponse.degrade(null, rpcRequest.getRequestId());
         }
+        // 获取降级服务的指定方法
         Method method;
         try {
             method = degradation.getDeclaredMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
@@ -87,6 +89,7 @@ public class NettyClientTransport implements ClientTransport {
             log.error("降级服务: [{}], 获取方法: [{}], 失败: [{}]", degradation, rpcRequest.getMethodName(), e.getMessage());
             return RpcResponse.degrade(null, rpcRequest.getRequestId());
         }
+        // 调用降级服务的指定方法
         Object data;
         try {
             data = method.invoke(instance, rpcRequest.getParameters());
@@ -95,6 +98,7 @@ public class NettyClientTransport implements ClientTransport {
             log.error("降级服务: [{}], 调用方法: [{}], 失败: [{}]", degradation, rpcRequest.getMethodName(), e.getMessage());
             return RpcResponse.degrade(null, rpcRequest.getRequestId());
         }
+        // 成功返回响应
         log.info("成功执行降级服务: [{}], 调用方法: [{}]", degradation, rpcRequest.getMethodName());
         return RpcResponse.degrade(data, rpcRequest.getRequestId());
     }
