@@ -11,7 +11,9 @@ public enum RpcConfigProperties {
     // 配置文件中ZK的地址
     ZK_ADDRESS("rpc.zookeeper.address"),
     // 配置文件中故障转移策略
-    FAILOVER_STRATEGY("rpc.failover.strategy");
+    FAILOVER_STRATEGY("rpc.failover.strategy"),
+    // 服务端配置文件设置的的端口
+    SERVER_PORT("rpc.server.port");
 
     private final String propertyValue;
 

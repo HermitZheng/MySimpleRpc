@@ -75,7 +75,8 @@ public class ServiceProviderImpl implements ServiceProvider {
             rpcServiceProperties.setServiceName(serviceName);
             this.addService(service, serviceRelatedInterface, rpcServiceProperties);
             // 注册服务（使用Zookeeper）
-            serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, NettyServer.PORT));
+            int port = NettyServer.serverPort();
+            serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, port));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
