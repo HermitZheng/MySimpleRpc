@@ -1,5 +1,6 @@
 package com.zhuqiu.time;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -15,4 +16,5 @@ public interface TimeService {
      */
     String getTime();
 
+    String getTimeByZoneId(ZoneId zone);
 }

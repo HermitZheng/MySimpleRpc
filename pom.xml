@@ -19,7 +19,7 @@
         <spring.version>5.2.7.RELEASE</spring.version>
         <!--Netty-->
         <netty.version>4.1.42.Final</netty.version>
-        <kryo.version>4.0.2</kryo.version>
+        <kryo.version>5.0.3</kryo.version>
         <!--tools-->
         <guava.version>29.0-jre</guava.version>
         <!-- test -->
