@@ -13,7 +13,9 @@ public enum RpcConfigProperties {
     // 配置文件中故障转移策略
     FAILOVER_STRATEGY("rpc.failover.strategy"),
     // 服务端配置文件设置的的端口
-    SERVER_PORT("rpc.server.port");
+    SERVER_PORT("rpc.server.port"),
+    // 服务端配置文件设置的的Host
+    SERVER_HOST("rpc.server.host");
 
     private final String propertyValue;
 

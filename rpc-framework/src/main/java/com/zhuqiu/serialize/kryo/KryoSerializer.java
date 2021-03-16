@@ -43,6 +43,7 @@ public class KryoSerializer implements Serializer {
              Output output = new Output(outputStream, 2048*2048)) {
             Kryo kryo = kryoThreadLocal.get();
             // 将Object序列化为byte数组
+//            kryo.writeObject(output, obj);
             kryo.writeClassAndObject(output, obj);
             // 使用完之后进行remove，回收Kryo实例，释放内存空间
             kryoThreadLocal.remove();
@@ -58,6 +59,7 @@ public class KryoSerializer implements Serializer {
              Input input = new Input(inputStream)) {
             Kryo kryo = kryoThreadLocal.get();
             // 从byte数组中反序列化出目标对象
+//            Object object = kryo.readObject(input, clazz);
             Object object = kryo.readClassAndObject(input);
             kryoThreadLocal.remove();
             return clazz.cast(object);

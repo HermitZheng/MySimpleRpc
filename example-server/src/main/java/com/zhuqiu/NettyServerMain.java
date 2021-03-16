@@ -1,6 +1,7 @@
 package com.zhuqiu;
 
 import com.zhuqiu.annotation.EnableRpcServer;
+import com.zhuqiu.dto.RpcResult;
 import com.zhuqiu.entity.RpcServiceProperties;
 import com.zhuqiu.remoting.transport.netty.server.NettyServer;
 import com.zhuqiu.serviceImpl.TimeServiceImpl;

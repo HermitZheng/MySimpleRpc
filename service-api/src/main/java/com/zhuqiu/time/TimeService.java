@@ -1,5 +1,7 @@
 package com.zhuqiu.time;
 
+import com.zhuqiu.dto.RpcResult;
+
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -14,7 +16,7 @@ public interface TimeService {
      *
      * @return  String
      */
-    String getTime();
+    RpcResult<String> getTime();
 
-    String getTimeByZoneId(ZoneId zone);
+    RpcResult<String> getTimeByZoneId(ZoneId zone);
 }

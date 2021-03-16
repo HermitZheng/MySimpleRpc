@@ -2,7 +2,7 @@ package com.zhuqiu.ocr;
 
 import com.zhuqiu.dto.RpcResult;
 
-import java.io.File;
+import java.util.HashMap;
 
 /**
  * @author zhuqiu
@@ -11,4 +11,8 @@ import java.io.File;
 public interface ChineseOCR {
 
     RpcResult<String> doOCR(String redisKey);
+
+    String testOCR(String redisKey);
+
+    HashMap<String, String> mapOCR(String redisKey);
 }

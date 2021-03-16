@@ -90,7 +90,7 @@ public class RpcClientProxy implements InvocationHandler {
             // 使用 CompletableFuture 来接收调用结果，当处理完毕时，可以通过 get() 获取到结果
             CompletableFuture<RpcResponse<Object>> completableFuture =
                     clientTransport.sendRpcRequest(rpcRequest);
-            rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
+            rpcResponse = completableFuture.get(15, TimeUnit.SECONDS);
             // 检查 RpcResponse 的有效性
             RpcMessageChecker.check(rpcResponse, rpcRequest);
         } catch (RpcException e) {
@@ -137,7 +137,7 @@ public class RpcClientProxy implements InvocationHandler {
         for (int i = 0; i < retryTimes; i++) {
             try {
                 CompletableFuture<RpcResponse<Object>> completableFuture = clientTransport.sendRpcRequest(rpcRequest);
-                rpcResponse = completableFuture.get(8, TimeUnit.SECONDS);
+                rpcResponse = completableFuture.get(15, TimeUnit.SECONDS);
                 if (RpcMessageChecker.check(rpcResponse, rpcRequest)) {
                     flag = true;
                     break;

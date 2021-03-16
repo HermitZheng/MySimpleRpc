@@ -26,7 +26,7 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     private final LoadBalance loadBalance;
 
     public ZkServiceDiscovery() {
-        this.loadBalance = new ConsistentHashLoadBalance();
+        this.loadBalance = new RandomLoadBalance();
     }
 
     @Override
