@@ -98,7 +98,7 @@ public class NettyServer implements InitializingBean {
                             pipeline.addLast(new NettyServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(host, PORT).sync();
+            ChannelFuture channelFuture = bootstrap.bind(PORT).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("服务启动异常：", e);

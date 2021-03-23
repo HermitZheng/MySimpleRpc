@@ -14,10 +14,9 @@ public interface UserService {
 
     RpcResult<List<UserDTO>> findAllByName(String name);
 
-    /**
-     * 新增 和 修改 相同
-     */
     RpcResult saveOne(UserDTO user);
+
+    RpcResult updateOne(UserDTO user);
 
     RpcResult deleteById(Long id);
 

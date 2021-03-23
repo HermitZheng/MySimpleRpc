@@ -15,4 +15,6 @@ public interface ChineseOCR {
     String testOCR(String redisKey);
 
     HashMap<String, String> mapOCR(String redisKey);
+
+    RpcResult<String> baiduOCR(String redisKey);
 }

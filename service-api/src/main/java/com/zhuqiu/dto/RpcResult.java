@@ -14,6 +14,8 @@ public class RpcResult<E> implements Serializable {
 
     private String serverName;
 
+    private String serviceName;
+
     private int code;
 
     private String message;
@@ -49,9 +51,25 @@ public class RpcResult<E> implements Serializable {
         return new RpcResult<>(result, serverName, Status.SUCCESS);
     }
 
+    public static<E> RpcResult<E> fail(E result, String serverName, String serviceName) {
+        return new RpcResult<>(result, serverName, Status.FAIL, serviceName);
+    }
+
+    public static<E> RpcResult<E> success(E result, String serverName, String serviceName) {
+        return new RpcResult<>(result, serverName, Status.SUCCESS, serviceName);
+    }
+
     public RpcResult(E result, String serverName, Status status) {
         this.result = result;
         this.serverName = serverName;
+        this.code = status.code;
+        this.message = status.status;
+    }
+
+    public RpcResult(E result, String serverName, Status status, String serviceName) {
+        this.result = result;
+        this.serverName = serverName;
+        this.serviceName = serviceName;
         this.code = status.code;
         this.message = status.status;
     }
@@ -87,11 +105,22 @@ public class RpcResult<E> implements Serializable {
         this.serverName = serverName;
     }
 
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     @Override
     public String toString() {
         return "RpcResult{" +
                 "result=" + result +
                 ", serverName='" + serverName + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", code=" + code +
+                ", message='" + message + '\'' +
                 '}';
     }
 }
