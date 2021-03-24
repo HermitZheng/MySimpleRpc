@@ -1,18 +1,21 @@
 package com.zhuqiu.provider.impl;
 
 import com.zhuqiu.entity.RpcServiceProperties;
+import com.zhuqiu.enumeration.RpcConfigProperties;
 import com.zhuqiu.enumeration.RpcErrorMessage;
 import com.zhuqiu.exception.RpcException;
 import com.zhuqiu.provider.ServiceProvider;
 import com.zhuqiu.registry.ServiceRegistry;
 import com.zhuqiu.registry.zk.ZkServiceRegistry;
 import com.zhuqiu.remoting.transport.netty.server.NettyServer;
+import com.zhuqiu.utils.file.PropertiesFileUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,7 +70,14 @@ public class ServiceProviderImpl implements ServiceProvider {
     @Override
     public void publishService(Object service, RpcServiceProperties rpcServiceProperties) {
         try {
-            String host = InetAddress.getLocalHost().getHostAddress();
+            String host = InetAddress.getLocalHost().getHostAddress();;
+            Properties properties = PropertiesFileUtils.readProperties(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
+            if (properties != null) {
+                String configHost = properties.getProperty(RpcConfigProperties.SERVER_HOST.getPropertyValue());
+                if (configHost != null) {
+                    host = configHost;
+                }
+            }
             // 获取服务的接口名
             Class<?> serviceRelatedInterface = service.getClass().getInterfaces()[0];
             // 返回标准形式的全限定类名，如：com.zhuqiu.service.HelloService
@@ -75,7 +85,8 @@ public class ServiceProviderImpl implements ServiceProvider {
             rpcServiceProperties.setServiceName(serviceName);
             this.addService(service, serviceRelatedInterface, rpcServiceProperties);
             // 注册服务（使用Zookeeper）
-            serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, NettyServer.PORT));
+            int port = NettyServer.serverPort();
+            serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, port));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

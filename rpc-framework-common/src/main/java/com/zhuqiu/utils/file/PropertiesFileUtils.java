@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -20,20 +21,21 @@ public class PropertiesFileUtils {
     private PropertiesFileUtils(){}
 
     public static Properties readProperties(String filename) {
-        if (properties != null) {
-            return properties;
-        } else {
-            return readPropertiesFile(filename);
+        if (properties == null) {
+            synchronized (PropertiesFileUtils.class) {
+                if (properties == null) {
+                    properties = readPropertiesFile(filename);
+                }
+            }
         }
+        return properties;
     }
 
     private static Properties readPropertiesFile(String filename) {
-        String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String rpcConfigPath = rootPath + filename;
-//        Properties properties = null;
-        try (FileInputStream fileInputStream = new FileInputStream(rpcConfigPath)) {
+        try (InputStream inputStream = Thread.currentThread()
+                .getContextClassLoader().getResourceAsStream(filename)) {
             properties = new Properties();
-            properties.load(fileInputStream);
+            properties.load(inputStream);
         } catch (IOException e) {
             log.error("读取配置文件时发生异常: [{}]", filename);
         }
