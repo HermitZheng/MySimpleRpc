@@ -28,9 +28,10 @@ public class KryoSerializer implements Serializer {
      */
     private final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
         Kryo kryo = new Kryo();
-        kryo.register(RpcRequest.class);
-        kryo.register(RpcResponse.class);
-
+        kryo.setReferences(true);
+        kryo.setRegistrationRequired(false);
+//        kryo.register(RpcRequest.class);
+//        kryo.register(RpcResponse.class);
         return kryo;
     });
 
@@ -39,10 +40,11 @@ public class KryoSerializer implements Serializer {
     public byte[] serialize(Object obj) {
         // try-with-resources 来打开资源，运行完毕后自动释放资源
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             Output output = new Output(outputStream)) {
+             Output output = new Output(outputStream, 2048*2048)) {
             Kryo kryo = kryoThreadLocal.get();
             // 将Object序列化为byte数组
-            kryo.writeObject(output, obj);
+//            kryo.writeObject(output, obj);
+            kryo.writeClassAndObject(output, obj);
             // 使用完之后进行remove，回收Kryo实例，释放内存空间
             kryoThreadLocal.remove();
             return output.toBytes();
@@ -57,7 +59,8 @@ public class KryoSerializer implements Serializer {
              Input input = new Input(inputStream)) {
             Kryo kryo = kryoThreadLocal.get();
             // 从byte数组中反序列化出目标对象
-            Object object = kryo.readObject(input, clazz);
+//            Object object = kryo.readObject(input, clazz);
+            Object object = kryo.readClassAndObject(input);
             kryoThreadLocal.remove();
             return clazz.cast(object);
         } catch (Exception e) {

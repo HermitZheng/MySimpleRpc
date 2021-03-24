@@ -4,6 +4,7 @@ import com.zhuqiu.annotation.RpcService;
 import com.zhuqiu.time.TimeService;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -21,5 +22,10 @@ public class TimeServiceImpl implements TimeService {
         String time = format.format(date).toString();
         System.out.println(time);
         return time;
+    }
+
+    @Override
+    public String getTimeByZoneId(ZoneId zone) {
+        return null;
     }
 }

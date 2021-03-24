@@ -65,10 +65,10 @@ public class CuratorUtils {
         try {
             if (REGISTERED_PATH_SET.contains(servicePath) || zkClient.checkExists().forPath(servicePath) != null) {
                 log.info("节点: [{}] 已经存在！", servicePath);
-            } else {
-                zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(servicePath);
-                log.info("节点: [{}] 创建成功！", servicePath);
+                zkClient.delete().forPath(servicePath);
             }
+            zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(servicePath);
+            log.info("节点: [{}] 创建成功！", servicePath);
             REGISTERED_PATH_SET.add(servicePath);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());

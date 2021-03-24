@@ -1,10 +1,6 @@
 package com.zhuqiu;
 
 import com.zhuqiu.annotation.EnableRpcServer;
-import com.zhuqiu.entity.RpcServiceProperties;
-import com.zhuqiu.remoting.transport.netty.server.NettyServer;
-import com.zhuqiu.serviceImpl.TimeServiceImpl;
-import com.zhuqiu.time.TimeService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 

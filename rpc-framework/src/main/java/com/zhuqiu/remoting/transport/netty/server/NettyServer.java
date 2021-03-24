@@ -2,6 +2,7 @@ package com.zhuqiu.remoting.transport.netty.server;
 
 import com.zhuqiu.config.CustomShutdownHook;
 import com.zhuqiu.entity.RpcServiceProperties;
+import com.zhuqiu.enumeration.RpcConfigProperties;
 import com.zhuqiu.factory.SingletonFactory;
 import com.zhuqiu.provider.ServiceProvider;
 import com.zhuqiu.provider.impl.ServiceProviderImpl;
@@ -10,6 +11,7 @@ import com.zhuqiu.remoting.dto.RpcResponse;
 import com.zhuqiu.remoting.transport.netty.codec.NettyKryoDecoder;
 import com.zhuqiu.remoting.transport.netty.codec.NettyKryoEncoder;
 import com.zhuqiu.serialize.kryo.KryoSerializer;
+import com.zhuqiu.utils.file.PropertiesFileUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,9 +41,27 @@ import java.util.concurrent.TimeUnit;
 public class NettyServer implements InitializingBean {
 
     private final KryoSerializer kryoSerializer = new KryoSerializer();
-    public static final int PORT = 9998;
+    private static int DEFAULT_PORT = 9998;
+    public static int PORT = 0;
 
     private final ServiceProvider serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+
+    public NettyServer() {
+        PORT = serverPort();
+    }
+
+    public static int serverPort() {
+        if (PORT == 0) {
+            Properties properties = PropertiesFileUtils.readProperties(RpcConfigProperties.RPC_CONFIG_PATH.getPropertyValue());
+            if (properties != null) {
+                String configPort = properties.getProperty(RpcConfigProperties.SERVER_PORT.getPropertyValue());
+                PORT = configPort != null ? Integer.parseInt(configPort) : DEFAULT_PORT;
+            } else {
+                PORT = DEFAULT_PORT;
+            }
+        }
+        return PORT;
+    }
 
     public void registerService(Object service) {
         serviceProvider.publishService(service);
@@ -77,7 +98,7 @@ public class NettyServer implements InitializingBean {
                             pipeline.addLast(new NettyServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(host, PORT).sync();
+            ChannelFuture channelFuture = bootstrap.bind(PORT).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("服务启动异常：", e);
