@@ -86,6 +86,7 @@ public class NettyServer implements InitializingBean {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     // 存放 TCP 连接的请求队列的最大长度，如果建立连接较多而导致服务器处理较慢，可以调大这个参数
                     .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(65535))
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
