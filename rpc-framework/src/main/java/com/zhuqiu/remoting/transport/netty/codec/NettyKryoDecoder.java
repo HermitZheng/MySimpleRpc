@@ -50,7 +50,7 @@ public class NettyKryoDecoder extends ByteToMessageDecoder {
             }
             // 如果可读取字节数小于消息长度，则说明消息不完整，重置读指针
             if (in.readableBytes() < length) {
-                in.readerIndex();
+                in.resetReaderIndex();
                 return;
             }
             // 获取消息体字节数组
