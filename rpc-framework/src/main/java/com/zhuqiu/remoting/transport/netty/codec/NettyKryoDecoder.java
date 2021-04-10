@@ -38,7 +38,7 @@ public class NettyKryoDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         // 由于消息长度已占4个字节，因此可读取长度必须大于4
-        if (in.writableBytes() >= BODY_LENGTH) {
+        if (in.readableBytes() >= BODY_LENGTH) {
             // 记录当前读指针位置，以便之后重置readerIndex
             in.markReaderIndex();
             // 获取字节数组长度（在Encoder中写入）
@@ -46,6 +46,7 @@ public class NettyKryoDecoder extends ByteToMessageDecoder {
             // 如果记录的字节数组长度 或者 可读取长度 不合法，则直接return
             if (length < 0 || in.readableBytes() < 0) {
                 log.error("data length or byteBuf readableBytes is not valid!");
+                in.resetReaderIndex();
                 return;
             }
             // 如果可读取字节数小于消息长度，则说明消息不完整，重置读指针
