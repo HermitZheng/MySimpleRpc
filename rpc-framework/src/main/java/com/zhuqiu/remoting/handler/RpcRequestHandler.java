@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  * @date 2020/8/4
  */
 @Slf4j
-public class RpcRequestHandler {
+public class RpcRequestHandler implements ServerHandler {
 
     private final ServiceProvider serviceProvider;
 
@@ -31,6 +31,7 @@ public class RpcRequestHandler {
      * @param rpcRequest    RPC请求
      * @return  处理结果 Object
      */
+    @Override
     public Object handle(RpcRequest rpcRequest) throws RpcException {
         Object service = serviceProvider.getService(rpcRequest.toRpcProperties());
         return invokeTargetMethod(rpcRequest, service);
